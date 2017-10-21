@@ -48,12 +48,3 @@ ax.set_zlabel("$\phi$", fontsize=12)
 
 fig.colorbar(surf, shrink=0.5, aspect=5)
 plt.show()
-
-
-
-
-
-
-
-
-
