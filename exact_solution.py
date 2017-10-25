@@ -20,7 +20,7 @@ N = 100     # No. of grid points
 x = np.linspace(0, L, N)
 y = np.linspace(0, L, N)
 
-X, Y = np.meshgrid(x, y) # Create a mesh
+X, Y = np.meshgrid(x, y) # Create a mesh using meshgrid
 
 # Define few additional variables for simplicity
 
