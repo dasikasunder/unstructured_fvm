@@ -42,8 +42,6 @@ ax.set_xlabel("$x$", fontsize=12)
 ax.set_ylabel("$y$", fontsize=12)
 ax.set_zlabel("$\phi$", fontsize=12)
 
-
-
 # Add a color bar which maps values to colors.
 
 fig.colorbar(surf, shrink=0.5, aspect=5)
