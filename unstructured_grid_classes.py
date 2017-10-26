@@ -117,9 +117,10 @@ class read_mesh_data:
 
     # Constructor
 
-    def __init__(self):
+    def __init__(self, s):
 
-        meshData = open("mesh_files/106_elements.geo", "r")
+        filepath  = "mesh_files/" + s
+        meshData = open(filepath, "r")
         self.no_of_vertices = int(meshData.readline())
         self.vertex_array = np.zeros(shape=(self.no_of_vertices,2))
 
@@ -185,9 +186,9 @@ class Triangulation:
 
     # Class constructor
 
-    def __init__(self):
+    def __init__(self, s):
 
-        meshData = read_mesh_data()
+        meshData = read_mesh_data(s)
 
         vertex_information = meshData.get_vertex_information_from_mesh()
         cell_information = meshData.get_cell_information_from_mesh()
@@ -255,17 +256,30 @@ class Triangulation:
     def get_cell_array(self):
             return self.cell_array
 
+    # Methods to provide additional information about mesh
 
+    def no_of_boundary_cells(self):
+        n = 0
+        for i in range(0, self.no_of_cells):
+            Cell = self.cell_array[i]
+            [EA, EB, EC] = Cell.get_cell_edges()
+            b_idA = EA.get_boundary_id()
+            b_idB = EB.get_boundary_id()
+            b_idC = EC.get_boundary_id()
+            if (b_idA + b_idB + b_idC != 0):
+                n = n+1
+        return n
 
+mesh = Triangulation("106_elements.geo")
+#c = mesh.get_cell_array()
 
+N = mesh.no_of_boundary_cells()
+print(N)
+#Cell1 = c[56]
+#[EA, EB, EC] = Cell1.get_cell_edges()
 
+#[LC, RC] = EB.get_straddling_cells()
+#print(RC.get_global_cell_number())
 
-
-mesh = Triangulation()
-c = mesh.get_cell_array()
-Cell2 = c[1]
-[EA, EB, EC] = Cell2.get_cell_edges()
-
-[LC, RC] = EC.get_straddling_cells()
-
-print(RC.get_global_cell_number())
+#b_id = EA.get_boundary_id()
+#print(b_id)
