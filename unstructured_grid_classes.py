@@ -28,7 +28,7 @@ class Edge:
 
     # Constructor
 
-    def __init__(self, Vertex_A, Vertex_B, L_cell, R_cell, boundary_id, edge_number):
+    def __init__(self, Vertex_A, Vertex_B, edge_number, boundary_id, L_cell, R_cell = 0):
         self.A = Vertex_A
         self.B = Vertex_B
         self.LC = L_cell
@@ -87,6 +87,13 @@ class Cell:
 
     def get_global_cell_number(self):
         return self.c_id
+
+    # Setter method (for edges only)
+
+    def set_cell_edges(self, Edge_A, Edge_B, Edge_C):
+        self.EA = Edge_A
+        self.EB = Edge_B
+        self.EC = Edge_C
 
     # Methods to get geometrical information of the edge
 
@@ -206,6 +213,26 @@ class Triangulation:
             cell_i = Cell(A, B, C, cell_id)
             self.cell_array.append(cell_i)
 
+        self.edge_array = []
+
+        for i in range(0, self.no_of_edges):
+            A = self.vertex_array[int(edge_information[i,0] - 1)]
+            B = self.vertex_array[int(edge_information[i,1] - 1)]
+            LC = self.cell_array[int(edge_information[i,2] - 1)]
+            if (int(edge_information[i,3] - 1) != 0):
+                RC = self.cell_array[int(edge_information[i,3] - 1)]
+
+            b_id = int(edge_information[i,4])
+            e_id = i+1
+            E = Edge(A, B, e_id, b_id, LC, RC)
+            self.edge_array.append(E)
+
+        for i in range(0, self.no_of_cells):
+            EA = self.edge_array[int(cell_information[i,3] - 1)]
+            EB = self.edge_array[int(cell_information[i,4] - 1)]
+            EC = self.edge_array[int(cell_information[i,5] - 1)]
+            self.cell_array[i].set_cell_edges(EA, EB, EC)
+
 
 
     # Getter methods
@@ -215,6 +242,12 @@ class Triangulation:
 
     def get_vertex_array(self):
         return self.vertex_array
+
+    def get_no_of_edges(self):
+        return self.no_of_edges
+
+    def get_edge_array(self):
+        return self.edge_array
 
     def get_no_of_cells(self):
             return self.no_of_cells
@@ -231,6 +264,8 @@ class Triangulation:
 mesh = Triangulation()
 c = mesh.get_cell_array()
 Cell2 = c[1]
-[A, B, C] = Cell2.get_cell_vertices()
+[EA, EB, EC] = Cell2.get_cell_edges()
 
-print(A.get_coordinates())
+[LC, RC] = EC.get_straddling_cells()
+
+print(RC.get_global_cell_number())
