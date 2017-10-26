@@ -66,6 +66,26 @@ class Edge:
         M =  Point(xm,ym)
         return M
 
+    def outward_unit_normal(self):
+        [xA,yA] = self.A.get_coordinates()
+        [xB,yB] = self.B.get_coordinates()
+        a = xA - xB
+        b = yA - yB
+        nx = b/sqrt(a**2 + b**2)
+        ny = -a/sqrt(a**2 + b**2)
+        n_v = np.array([nx, ny])
+        return n_v
+
+    def unit_tangent(self):
+        [xA,yA] = self.A.get_coordinates()
+        [xB,yB] = self.B.get_coordinates()
+        a = xA - xB
+        b = yA - yB
+        tx = a/sqrt(a**2 + b**2)
+        ty = b/sqrt(a**2 + b**2)
+        t_v = np.array([tx, ty])
+        return t_v
+
 
 class Cell:
     def __init__(self, Vertex_A, Vertex_B, Vertex_C, cell_id, Edge_A = 0, Edge_B = 0, Edge_C = 0):
@@ -271,15 +291,10 @@ class Triangulation:
         return n
 
 mesh = Triangulation("106_elements.geo")
-#c = mesh.get_cell_array()
+e = mesh.get_edge_array()
 
-N = mesh.no_of_boundary_cells()
-print(N)
-#Cell1 = c[56]
-#[EA, EB, EC] = Cell1.get_cell_edges()
+Edge= e[100]
+t = Edge.unit_tangent()
+n = Edge.outward_unit_normal()
 
-#[LC, RC] = EB.get_straddling_cells()
-#print(RC.get_global_cell_number())
-
-#b_id = EA.get_boundary_id()
-#print(b_id)
+print(np.dot(t,n))
