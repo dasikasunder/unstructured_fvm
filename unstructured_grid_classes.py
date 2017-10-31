@@ -1,6 +1,47 @@
 from math import sqrt
 import numpy as np
 
+# 2D Vector class
+
+class Vector:
+
+    # Constructor
+    def __init__(self, x = 0, y = 0):
+        self.x = x
+        self.y = y
+
+    # Get norm of a vector
+    def norm(self):
+        return sqrt(self.x**2 + self.y**2)
+
+    # Operators overloaded
+    def __add__(self,other):
+        x = self.x + other.x
+        y = self.y + other.y
+        return Vector(x,y)
+
+    def __sub__(self,other):
+        x = self.x - other.x
+        y = self.y - other.y
+        return Vector(x,y)
+
+    def __mul__(self, a):
+        x = a*self.x
+        y = a*self.y
+        return Vector(x,y)
+
+    # Dot product with other vector
+    def dot(self, other):
+        return ((self.x)*(other.x) + (self.y)*(other.y))
+
+    def normalize(self):
+        a = self.x
+        b = self.y
+        self.x = self.x/(sqrt(self.x**2 + self.y**2))
+        self.y = self.y/(sqrt(self.x**2 + self.y**2))
+
+# Simple point class
+
 class Point:
     def __init__(self, x_coordinate, y_coordinate):
         self.x = x_coordinate
@@ -13,6 +54,7 @@ class Point:
         d = sqrt(self.x**2 + self.y**2)
         return d
 
+# Vertex class inherited from point class - adds global vertex number
 
 class Vertex(Point):
     def __init__(self, x_coordinate, y_coordinate, vertex_number):
@@ -73,7 +115,15 @@ class Edge:
         b = yA - yB
         nx = b/sqrt(a**2 + b**2)
         ny = -a/sqrt(a**2 + b**2)
-        n_v = np.array([nx, ny])
+        n_v = Vector(nx, nv)
+        return n_v
+
+    def surface_area_vector(self):
+        [xA,yA] = self.A.get_coordinates()
+        [xB,yB] = self.B.get_coordinates()
+        a = xA - xB
+        b = yA - yB
+        n_v = Vector(b, -a)
         return n_v
 
     def unit_tangent(self):
@@ -83,7 +133,7 @@ class Edge:
         b = yA - yB
         tx = a/sqrt(a**2 + b**2)
         ty = b/sqrt(a**2 + b**2)
-        t_v = np.array([tx, ty])
+        t_v = Vector(tx, ty)
         return t_v
 
 
@@ -293,7 +343,7 @@ class Triangulation:
 mesh = Triangulation("106_elements.geo")
 e = mesh.get_edge_array()
 
-Edge= e[100]
+Edge= e[130]
 t = Edge.unit_tangent()
 n = Edge.outward_unit_normal()
 
