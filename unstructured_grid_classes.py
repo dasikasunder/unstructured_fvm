@@ -147,7 +147,84 @@ class Edge:
         return t_v
 
 class boundaryEdge(Edge):
-    pass
+        # Constructor
+
+        def __init__(self, Vertex_A, Vertex_B, edge_number, boundary_id, L_cell):
+            """Construtor for edge class"""
+            self.A = Vertex_A
+            self.B = Vertex_B
+            self.LC = L_cell
+            #self.RC = R_cell
+            self.b_id = boundary_id
+            self.global_edge_number = edge_number
+
+        # Getter methods
+
+        def get_edge_vertices(self):
+            """Tuple[Vertex]: Returns the the vertices which make the edge"""
+            return self.A, self.B
+
+        def get_straddling_cells(self):
+            """Tuple[Cell]: Returns the left and right straddling cells respectively"""
+            return self.LC #, self.RC
+
+        def get_boundary_id(self):
+            """int: Returns the boundary id"""
+            return self.b_id
+
+        def get_global_edge_number(self):
+            """int: Returns global edge number as give in the mesh file"""
+            return self.global_edge_number
+
+        # Methods to get geometrical information of the edge
+
+        def length(self):
+            """float: Returns the length of the edge"""
+            [xA,yA] = self.A.get_coordinates()
+            [xB,yB] = self.B.get_coordinates()
+            length = sqrt((xB - xA)**2 + (yB - yA)**2)
+            return length
+
+        def mid_point(self):
+            """Point: Returns the mid-point of the edge"""
+            [xA,yA] = self.A.get_coordinates()
+            [xB,yB] = self.B.get_coordinates()
+            xm = 0.5*(xA + xB)
+            ym = 0.5*(yA + yB)
+            M =  Point(xm,ym)
+            return M
+
+        def outward_unit_normal(self):
+            """Vector: Returns outward unit normal of the edge - from left cell to right cell"""
+            [xA,yA] = self.A.get_coordinates()
+            [xB,yB] = self.B.get_coordinates()
+            a = xA - xB
+            b = yA - yB
+            nx = b/sqrt(a**2 + b**2)
+            ny = -a/sqrt(a**2 + b**2)
+            n_v = Vector(nx, ny)
+            return n_v
+
+        def surface_area_vector(self):
+            """Vector: Returns surface area vector of the edge - from left cell to right cell"""
+            [xA,yA] = self.A.get_coordinates()
+            [xB,yB] = self.B.get_coordinates()
+            a = xA - xB
+            b = yA - yB
+            n_v = Vector(b, -a)
+            return n_v
+
+        def unit_tangent(self):
+            """Vector: Returns unit vector along the edge from vertex A to vertex B """
+            [xA,yA] = self.A.get_coordinates()
+            [xB,yB] = self.B.get_coordinates()
+            a = xA - xB
+            b = yA - yB
+            tx = a/sqrt(a**2 + b**2)
+            ty = b/sqrt(a**2 + b**2)
+            t_v = Vector(tx, ty)
+            return t_v
+
 
 class Cell:
     def __init__(self, Vertex_A, Vertex_B, Vertex_C, cell_id, Edge_A = 0, Edge_B = 0, Edge_C = 0):
@@ -297,26 +374,33 @@ class Triangulation:
             self.cell_array.append(cell_i)
 
         self.edge_array = []
+        self.number_of_boundary_edges = 0
 
         for i in range(0, self.no_of_edges):
             A = self.vertex_array[int(edge_information[i,0] - 1)]
             B = self.vertex_array[int(edge_information[i,1] - 1)]
             LC = self.cell_array[int(edge_information[i,2] - 1)]
-            if (int(edge_information[i,3] - 1) != 0):
-                RC = self.cell_array[int(edge_information[i,3] - 1)]
 
-            b_id = int(edge_information[i,4])
-            e_id = i+1
-            E = Edge(A, B, e_id, b_id, LC, RC)
-            self.edge_array.append(E)
+            if (int(edge_information[i,3] - 1) != -1):
+                RC = self.cell_array[int(edge_information[i,3] - 1)]
+                b_id = int(edge_information[i,4])
+                e_id = i+1
+                E = Edge(A, B, e_id, b_id, LC, RC)
+                self.edge_array.append(E)
+
+            elif(int(edge_information[i,3] - 1) == -1):
+                self.number_of_boundary_edges += 1
+                b_id = int(edge_information[i,4])
+                e_id = i+1
+                EB = boundaryEdge(A, B, e_id, b_id, LC)
+                self.edge_array.append(EB)
+
 
         for i in range(0, self.no_of_cells):
             EA = self.edge_array[int(cell_information[i,3] - 1)]
             EB = self.edge_array[int(cell_information[i,4] - 1)]
             EC = self.edge_array[int(cell_information[i,5] - 1)]
             self.cell_array[i].set_cell_edges(EA, EB, EC)
-
-
 
     # Getter methods
 
@@ -352,9 +436,66 @@ class Triangulation:
                 n = n+1
         return n
 
-mesh = Triangulation("106_elements.geo")
-e = mesh.get_edge_list()
+    def no_of_boundary_edges(self):
+        return self.number_of_boundary_edges
 
-Edge= e[130]
+    def no_of_boundary_patches(self):
+        counter = 1
+        b_id_old = self.edge_array[0].get_boundary_id()
+        for i in range(1, self.no_of_edges):
+            Edge = self.edge_array[i]
+            b_id = Edge.get_boundary_id()
+            if (b_id_old != b_id):
+                counter += 1
+            b_id_old = b_id
+        return counter
 
-print(mesh.no_of_boundary_cells())
+    def edge_iterator(self, a):
+        begin_counter = 0
+        end_counter = 0
+        b_id_list = []
+
+        for i in range(0, self.no_of_edges):
+            Edge = self.edge_array[i]
+            b_id = Edge.get_boundary_id()
+            b_id_list.append(b_id)
+
+        for i in range(0, self.no_of_edges):
+            if (b_id_list[i] == a):
+                begin_counter = i
+                break
+
+        counter = begin_counter
+
+        while (b_id_list[counter] == a ):
+
+            end_counter += 1
+            counter += 1
+
+            if (counter == (len(b_id_list))):
+                break
+
+
+        end_counter += begin_counter
+        return begin_counter, end_counter-1
+
+
+
+
+
+############## TESTS ################
+
+
+mesh = Triangulation("424_elements.geo")
+#edge_list = mesh.get_edge_list()
+print(mesh.edge_iterator(0))
+
+#E1= edge_list[0]
+#print(type(E1))
+
+#LC = E1.get_straddling_cells()
+#print(LC.get_global_cell_number())
+#print(RC.get_global_cell_number())
+
+
+#print(mesh.no_of_boundary_cells())
