@@ -1,0 +1,8 @@
+set pm3d
+set hidden3d
+set dgrid3d 50,50 qnorm 2
+# set view map
+set xlabel 'x'
+set ylabel 'y'
+set zlabel 'phi'
+splot 'test.dat' with lines
