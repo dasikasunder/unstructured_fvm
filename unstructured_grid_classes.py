@@ -4,37 +4,61 @@ import numpy as np
 # 2D Vector class
 
 class Vector:
-
+    """
+    Vector class
+    """
     # Constructor
     def __init__(self, x = 0, y = 0):
+        """
+        Constructor: Takes x and y component of the vector.
+                     Default: x = 0.0, y = 0.0
+        """
         self.x = x
         self.y = y
 
     # Get norm of a vector
     def norm(self):
+        """
+        Float: Finds the 2-norm (magnitutde) of the vector
+        """
         return sqrt(self.x**2 + self.y**2)
 
     # Operators overloaded
     def __add__(self,other):
+        """
+        Vector: '+' operator
+        """
         x = self.x + other.x
         y = self.y + other.y
         return Vector(x,y)
 
     def __sub__(self,other):
+        """
+        Vector: '-' operator
+        """
         x = self.x - other.x
         y = self.y - other.y
         return Vector(x,y)
 
     def __mul__(self, a):
+        """
+        Vector: '*' operator (for multiplyng with a scalar)
+        """
         x = a*self.x
         y = a*self.y
         return Vector(x,y)
 
     # Dot product with other vector
     def dot(self, other):
+        """
+        Float: Returns the dot product of two vectors
+        """
         return ((self.x)*(other.x) + (self.y)*(other.y))
 
     def normalize(self):
+        """
+        Void: Converts the given vector into a unit vector
+        """
         a = self.x
         b = self.y
         self.x = self.x/(sqrt(a**2 + b**2))
@@ -43,28 +67,49 @@ class Vector:
 # Simple point class
 
 class Point:
+    """
+    Point class
+    """
     def __init__(self, x_coordinate, y_coordinate):
+        """
+        Constructor: Takes x and y coordinates of the point
+        """
         self.x = x_coordinate
         self.y = y_coordinate
 
     def get_coordinates(self):
+        """
+        Tuple[float]: Returns the x and y coordinates of the point
+        """
         return self.x, self.y
 
     def distance_from_origin(self):
+        """
+        Float: Returns the distance of the point from origin
+        """
         d = sqrt(self.x**2 + self.y**2)
         return d
 
 # Vertex class inherited from point class - adds global vertex number
 
 class Vertex(Point):
+    """
+    Vertex class (inhertited from point class)
+    """
     def __init__(self, x_coordinate, y_coordinate, vertex_number):
         Point.__init__(self, x_coordinate, y_coordinate)
         self.global_vertex_number = vertex_number
 
     def get_global_vertex_number(self):
+        """
+        Int: Returns the global index of the vertex
+        """
         return self.global_vertex_number
 
     def print_vertex_information(self):
+        """
+        Void: Prints important data about the point
+        """
         print("x-coordinate:", self.x)
         print("y-coordinate:", self.y)
         print("Vertex number:", self.global_vertex_number)
@@ -73,11 +118,23 @@ class Vertex(Point):
 # Edge class (for interior edges)
 
 class Edge:
+    """
+    Edge class
+    """
 
     # Constructor
 
     def __init__(self, Vertex_A, Vertex_B, edge_number, boundary_id, L_cell, R_cell = 0):
-        """Construtor for edge class"""
+        """
+        Construtor: Edge(Vertex_A, Vertex_B, edge_number, boundary_id, L_cell, R_cell)
+            where,
+            Vertex A: First point of the edge
+            Vertex B: Second point of the edge
+            edge_number: Global edge number
+            boundary_id: Boundary ID of the edge
+            L_cell: Left cell of the edge
+            R_cell: Right cell of the edge
+        """
         self.A = Vertex_A
         self.B = Vertex_B
         self.LC = L_cell
@@ -88,32 +145,44 @@ class Edge:
     # Getter methods
 
     def get_edge_vertices(self):
-        """Tuple[Vertex]: Returns the the vertices which make the edge"""
+        """
+        Tuple[Vertex]: Returns the the vertices which make the edge
+        """
         return self.A, self.B
 
     def get_straddling_cells(self):
-        """Tuple[Cell]: Returns the left and right straddling cells respectively"""
+        """
+        Tuple[Cell]: Returns the left and right straddling cells respectively
+        """
         return self.LC, self.RC
 
     def get_boundary_id(self):
-        """int: Returns the boundary id"""
+        """
+        int: Returns the boundary id
+        """
         return self.b_id
 
     def get_global_edge_number(self):
-        """int: Returns global edge number as give in the mesh file"""
+        """
+        int: Returns global edge number as give in the mesh file
+        """
         return self.global_edge_number
 
     # Methods to get geometrical information of the edge
 
     def length(self):
-        """float: Returns the length of the edge"""
+        """
+        float: Returns the length of the edge
+        """
         [xA,yA] = self.A.get_coordinates()
         [xB,yB] = self.B.get_coordinates()
         length = sqrt((xB - xA)**2 + (yB - yA)**2)
         return length
 
     def mid_point(self):
-        """Point: Returns the mid-point of the edge"""
+        """
+        Point: Returns the mid-point of the edge
+        """
         [xA,yA] = self.A.get_coordinates()
         [xB,yB] = self.B.get_coordinates()
         xm = 0.5*(xA + xB)
@@ -122,7 +191,9 @@ class Edge:
         return M
 
     def outward_unit_normal(self):
-        """Vector: Returns outward unit normal of the edge - from left cell to right cell"""
+        """
+        Vector: Returns outward unit normal of the edge - from left cell to right cell
+        """
         [xA,yA] = self.A.get_coordinates()
         [xB,yB] = self.B.get_coordinates()
         a = xA - xB
@@ -133,7 +204,9 @@ class Edge:
         return n_v
 
     def surface_area_vector(self):
-        """Vector: Returns surface area vector of the edge - from left cell to right cell"""
+        """
+        Vector: Returns surface area vector of the edge - from left cell to right cell
+        """
         [xA,yA] = self.A.get_coordinates()
         [xB,yB] = self.B.get_coordinates()
         a = xA - xB
@@ -142,7 +215,9 @@ class Edge:
         return n_v
 
     def unit_tangent_vector(self):
-        """Vector: Returns unit vector along the edge from vertex A to vertex B """
+        """
+        Vector: Returns unit vector along the edge from vertex A to vertex B
+        """
         [xA,yA] = self.A.get_coordinates()
         [xB,yB] = self.B.get_coordinates()
         a = xA - xB
@@ -178,6 +253,18 @@ class Edge:
         Sf = Edge.surface_area_vector(self)
         Tf = Sf - Ef
         return Tf
+    
+    def distance_between_straddling_cell_centroids(self):
+        """
+        Float: Returns distance between the left cell centroid and right cell
+        centroid
+        """
+        PL = self.LC.centroid()
+        PR = self.RC.centroid()
+        [xL, yL] = PL.get_coordinates()
+        [xR, yR] = PR.get_coordinates()
+        d_CF = sqrt((xR - xL)**2 + (yR - yL)**2)
+        return d_CF
 
     def print_edge_information(self):
         """
@@ -200,17 +287,27 @@ class Edge:
         print("Tf:" , t_f.x, t_f.y)
 
 
-class boundaryEdge(Edge):
+class boundaryEdge():
+
+        """
+        boundaryEdge class - similar to Edge class with few differences
+        """
         # Constructor
 
         def __init__(self, Vertex_A, Vertex_B, edge_number, boundary_id, L_cell):
             """
-            Construtor for edge class
+            Construtor: Edge(Vertex_A, Vertex_B, edge_number, boundary_id, L_cell)
+                where,
+                Vertex A: First point of the edge
+                Vertex B: Second point of the edge
+                edge_number: Global edge number
+                boundary_id: Boundary ID of the edge
+                L_cell: Left cell of the edge
             """
+
             self.A = Vertex_A
             self.B = Vertex_B
             self.LC = L_cell
-            #self.RC = R_cell
             self.b_id = boundary_id
             self.global_edge_number = edge_number
 
@@ -225,13 +322,14 @@ class boundaryEdge(Edge):
 
         def get_straddling_cells(self):
             """
-            Tuple[Cell]: Returns the left and right straddling
-            cells respectively
+            Cell: Returns the left straddling cells
             """
-            return self.LC #, self.RC
+            return self.LC
 
         def get_boundary_id(self):
-            """int: Returns the boundary id"""
+            """
+            int: Returns the boundary id
+            """
             return self.b_id
 
         def get_global_edge_number(self):
@@ -277,14 +375,14 @@ class boundaryEdge(Edge):
 
         def surface_area_vector(self):
             """
-            Vector: Returns surface area vector of the edge - from left cell
-            to right cell
+            Vector: Returns surface area vector of the edge - from left cell to
+            to outsdie domain
             """
             [xA,yA] = self.A.get_coordinates()
             [xB,yB] = self.B.get_coordinates()
             a = xA - xB
             b = yA - yB
-            n_v = Vector(b, -a)
+            n_v = Vector(-b, a)
             return n_v
 
         def unit_tangent(self):
@@ -300,6 +398,47 @@ class boundaryEdge(Edge):
             ty = b/sqrt(a**2 + b**2)
             t_v = Vector(tx, ty)
             return t_v
+
+        def vector_joining_centroid_to_edge_mid_point(self):
+       
+            """
+            Vector: Returns a vector joining the left cell centroid and edge 
+            mid-point
+            """
+       
+            PL = self.LC.centroid()
+            EM = Edge.mid_point(self)
+            [xL, yL] = PL.get_coordinates()
+            [xR, yR] = EM.get_coordinates()
+            ex = xR - xL
+            ey = yR - yL
+            Ef = Vector(ex, ey)
+            Ef.normalize()
+            l = boundaryEdge.length(self)
+            Ef.x = l*Ef.x # Normal/Orthogonal correction
+            Ef.y = l*Ef.y
+            return Ef
+        
+        def vector_tf(self):
+            """
+            Vector: Returns Tf vector such that Sf = Ef + Tf
+            """
+            Ef = boundaryEdge.vector_joining_centroid_to_edge_mid_point(self)
+            Sf = boundaryEdge.surface_area_vector(self)
+            Tf = Sf - Ef
+            return Tf
+        
+        def distance_between_straddling_cell_and_edge_mid_point(self):
+            """
+            Float: Returns distance between the left cell centroid and right cell
+            centroid
+            """
+            PL = self.LC.centroid()
+            EM = Edge.mid_point(self)
+            [xL, yL] = PL.get_coordinates()
+            [xR, yR] = EM.get_coordinates()
+            d_CB = sqrt((xL - xR)**2 + (yL - yR)**2)
+            return d_CB
 
 
 class Cell:
@@ -560,23 +699,3 @@ class Triangulation:
 
         end_counter += begin_counter
         return begin_counter, end_counter-1
-
-
-
-
-
-############## TESTS ################
-
-
-mesh = Triangulation("106_elements.geo")
-vertex_list = mesh.get_vertex_list()
-edge_list = mesh.get_edge_list()
-
-V1 = vertex_list[10]
-#V1.print_vertex_information()
-
-E41 = edge_list[40]
-E41.print_edge_information()
-
-
-#print(type(E1))
