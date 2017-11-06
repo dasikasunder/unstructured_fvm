@@ -1,0 +1,12 @@
+set terminal epslatex size 15cm,12cm color 
+unset key
+set pm3d
+set hidden3d
+set dgrid3d 50,50 qnorm 2
+#set view map
+set title "Velocity plot"
+set xlabel '$x$'
+set ylabel '$y$'
+set zlabel '$\phi$'
+set output "plot.tex"
+splot 'plot.txt' with lines
