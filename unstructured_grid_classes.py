@@ -471,7 +471,7 @@ class Cell:
 
     # Methods to get geometrical information of the edge
 
-    def area_of_cell(self):
+    def area(self):
         [xA,yA] = self.A.get_coordinates()
         [xB,yB] = self.B.get_coordinates()
         [xC,yC] = self.C.get_coordinates()
@@ -668,7 +668,7 @@ class Triangulation:
     def edge_iterator(self, a):
 
         """
-        List[int, int]: Returns the begining and ending index of edge with
+        Tuple[int, int]: Returns the begining and ending index of edge with
         boundary ID 'a'. Note that indexing starts from 0.
         """
 
