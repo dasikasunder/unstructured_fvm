@@ -89,6 +89,11 @@ class Point:
         """
         d = sqrt(self.x**2 + self.y**2)
         return d
+    
+    def distance_from_point(self, P):
+        [xP, yP] = P.get_coordinates()
+        d = sqrt((self.x - xP)**2 + (self.y - yP)**2)
+        return d
 
 # Vertex class inherited from point class - adds global vertex number
 
@@ -226,6 +231,22 @@ class Edge:
         ty = b/sqrt(a**2 + b**2)
         t_v = Vector(tx, ty)
         return t_v
+    
+    def unit_vector_joining_straddling_cell_centroids(self):
+        """
+        Vector: Returns a unit vector joining the left cell centroid and the 
+        right cell centroid 
+        """
+        PL = self.LC.centroid()
+        PR = self.RC.centroid()
+        [xL, yL] = PL.get_coordinates()
+        [xR, yR] = PR.get_coordinates()
+        ex = xR - xL
+        ey = yR - yL
+        Ef = Vector(ex, ey)
+        Ef.normalize()
+        return Ef    
+
 
     def vector_joining_straddling_cell_centroids(self):
         """
@@ -265,6 +286,25 @@ class Edge:
         [xR, yR] = PR.get_coordinates()
         d_CF = sqrt((xR - xL)**2 + (yR - yL)**2)
         return d_CF
+    
+    def g_c(self):
+        """
+        Float: Returns interpolation factor g_c
+        """
+        PL = self.LC.centroid()
+        PR = self.RC.centroid()
+        EM = Edge.mid_point(self)
+        
+        [xL, yL] = PL.get_coordinates()
+        [xR, yR] = PR.get_coordinates()
+        [xM, yM] = EM.get_coordinates()
+        
+        Ff = sqrt((xR - xM)**2 + (yR - yM)**2)
+        Cf = sqrt((xL - xM)**2 + (yL - yM)**2)
+        
+        gc = Ff/(Ff + Cf)
+        
+        return gc
 
     def print_edge_information(self):
         """
@@ -285,6 +325,8 @@ class Edge:
         print("Ef:", e_f.x, e_f.y)
         t_f = Edge.vector_tf(self)
         print("Tf:" , t_f.x, t_f.y)
+        g_f = Edge.g_c(self)
+        print("g_c =", g_f)
 
 
 class boundaryEdge():
@@ -417,6 +459,23 @@ class boundaryEdge():
             l = boundaryEdge.length(self)
             Ef.x = l*Ef.x # Normal/Orthogonal correction
             Ef.y = l*Ef.y
+            return Ef
+        
+        def unit_vector_joining_centroid_to_edge_mid_point(self):
+       
+            """
+            Vector: Returns a unit vector joining the left cell centroid and edge 
+            mid-point
+            """
+       
+            PL = self.LC.centroid()
+            EM = Edge.mid_point(self)
+            [xL, yL] = PL.get_coordinates()
+            [xR, yR] = EM.get_coordinates()
+            ex = xR - xL
+            ey = yR - yL
+            Ef = Vector(ex, ey)
+            Ef.normalize()
             return Ef
         
         def vector_tf(self):
