@@ -1,5 +1,9 @@
 import unstructured_grid_classes as ugc
 import numpy as np
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as plt
+from matplotlib.mlab import griddata
+from matplotlib import cm
 
 mesh = ugc.Triangulation("6784_elements.geo")
 
@@ -256,8 +260,24 @@ class ScalarField:
             
         return phi_grad_edges
         
+    def plot_3d_surf(self):
+        fig = plt.figure()
+        ax = fig.gca(projection='3d')
+        xi = np.linspace(min(self.x_c), max(self.x_c), 33)
+        yi = np.linspace(min(self.y_c), max(self.y_c), 33)
+        X, Y = np.meshgrid(xi, yi)
+        Z = griddata(self.x_c, self.y_c, self.cell_centroid_value, xi, yi, interp='linear')
+       
+        surf = ax.plot_surface(X, Y, Z, rstride=5, cstride=5, cmap=cm.jet, vmin=np.nanmin(Z), vmax=np.nanmax(Z))
+        ax.set_title('Steady state solution')
+        ax.set_xlabel("$x$", fontsize=12)
+        ax.set_ylabel("$y$", fontsize=12)
+        ax.set_zlabel("$\phi$", fontsize=12)
+        ax.set_zlim3d(np.min(Z), np.max(Z))
+        fig.colorbar(surf)
+        plt.show()
         
         
-    def plot(self):
+    def plot_gnuplot(self):
         data_array = np.column_stack([self.x_c, self.y_c, self.cell_centroid_value])
         np.savetxt('plot.txt', data_array)

@@ -305,7 +305,25 @@ class Edge:
         gc = Ff/(Ff + Cf)
         
         return gc
-
+    
+    def gDiff(self):
+        """
+        Float: Returns geometric diffusion factor for the edge
+        """
+        Ef = Edge.length(self)
+        d_CF = Edge.distance_between_straddling_cell_centroids(self)
+        return Ef/d_CF
+    
+    def is_left_cell(self, cell_index):
+        """
+        Boolean: Returns True if given cell index is left cell index of the edge 
+        """
+        
+        if(cell_index ==  self.LC.get_global_cell_number()):
+            return True
+        else:
+            return False
+        
     def print_edge_information(self):
         """
         Prints important information about the vertex
@@ -459,7 +477,7 @@ class boundaryEdge():
             l = boundaryEdge.length(self)
             Ef.x = l*Ef.x # Normal/Orthogonal correction
             Ef.y = l*Ef.y
-            return Ef
+            return Ef        
         
         def unit_vector_joining_centroid_to_edge_mid_point(self):
        
@@ -478,7 +496,7 @@ class boundaryEdge():
             Ef.normalize()
             return Ef
         
-        def vector_tf(self):
+        def vector_tb(self):
             """
             Vector: Returns Tf vector such that Sf = Ef + Tf
             """
@@ -498,6 +516,13 @@ class boundaryEdge():
             [xR, yR] = EM.get_coordinates()
             d_CB = sqrt((xL - xR)**2 + (yL - yR)**2)
             return d_CB
+        
+        def gDiff(self):
+            Eb = boundaryEdge.length(self)
+            d_Cb = boundaryEdge.distance_between_straddling_cell_and_edge_mid_point(self)
+            return Eb/d_Cb
+            
+            
 
 
 class Cell:
