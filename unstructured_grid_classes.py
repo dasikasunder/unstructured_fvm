@@ -64,7 +64,7 @@ class Vector:
         self.x = self.x/(sqrt(a**2 + b**2))
         self.y = self.y/(sqrt(a**2 + b**2))
 
-# Simple point class
+# Point class
 
 class Point:
     """
