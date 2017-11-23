@@ -522,6 +522,25 @@ class boundaryEdge():
             d_Cb = boundaryEdge.distance_between_straddling_cell_and_edge_mid_point(self)
             return Eb/d_Cb
             
+        def print_edge_information(self):
+            """
+            Prints important information about the vertex
+            """
+            print("Edge number:", self.global_edge_number)
+            print("Edge type: Boundary edge")
+            print("Edge vertices:", self.A.get_global_vertex_number(),",", self.B.get_global_vertex_number())
+            print("   Vertex", self.A.get_global_vertex_number(), ":", self.A.get_coordinates())
+            print("   Vertex", self.B.get_global_vertex_number(), ":", self.B.get_coordinates())
+            print("Left cell:", self.LC.get_global_cell_number())
+            print("Edge Length:", boundaryEdge.length(self))
+            M = boundaryEdge.mid_point(self)
+            print("Mid point:", M.get_coordinates())
+            s_f = boundaryEdge.surface_area_vector(self)
+            print("Sf:",  s_f.x , s_f.y, )
+            e_b = boundaryEdge.vector_joining_centroid_to_edge_mid_point(self)
+            print("Ef:", e_b.x, e_b.y)
+            t_b = boundaryEdge.vector_tb(self)
+            print("Tf:" , t_b.x, t_b.y)
             
 
 
@@ -570,7 +589,24 @@ class Cell:
         ry = (yA + yB + yC)/3.0
         r = Point(rx,ry)
         return r
-
+    
+    def print_cell_information(self):
+        """"
+        Prints Critical Information about the cell
+        """
+        
+        print("Cell number:", self.c_id)
+        print("Cell Vertices:", self.A.get_global_vertex_number(),",", self.B.get_global_vertex_number(),",",self.C.get_global_vertex_number())
+        print("   Vertex", self.A.get_global_vertex_number(), ":", self.A.get_coordinates())
+        print("   Vertex", self.B.get_global_vertex_number(), ":", self.B.get_coordinates())
+        print("   Vertex", self.C.get_global_vertex_number(), ":", self.C.get_coordinates())
+        print("Cell edges:", self.EA.get_global_edge_number(),",", self.EB.get_global_edge_number(),",",self.EC.get_global_edge_number())
+        Area = Cell.area(self)
+        print("Cell area:", Area)
+        M = Cell.centroid(self)
+        print("Cell centroid:", M.get_coordinates())
+        
+        
 class read_mesh_data:
 
     # Constructor
@@ -637,7 +673,9 @@ class read_mesh_data:
         return self.cell_array
 
     def get_edge_information_from_mesh(self):
-            return self.edge_array
+        return self.edge_array
+    
+    
 
 
 class Triangulation:
