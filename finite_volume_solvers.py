@@ -6,7 +6,7 @@ from fvc_class import fvc
 
 class advection_diffusion_equation_solver:
     """
-    Solver class for Advection-Diffusion Equation
+    Solver class for solving Advection-Diffusion Equation
     """
     
     def __init__(self, gamma, u_0, dt, phi):
